@@ -1,0 +1,40 @@
+[project]
+name = "embedstamp"
+version = "0.1.0"
+description = "Stamp a vector index with its embedding model's fingerprint, detect silent model swaps at query time, and re-embed safely."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+authors = [{ name = "LeeGyeongPil" }]
+keywords = ["embeddings", "rag", "vector-database", "chroma", "fingerprint", "migration"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+dependencies = ["numpy>=2.0"]
+
+[project.optional-dependencies]
+chroma = ["chromadb>=1.5.9"]
+fastembed = ["fastembed>=0.9.1"]
+
+[project.urls]
+Homepage = "https://github.com/LeeGyeongPil/embedstamp"
+Issues = "https://github.com/LeeGyeongPil/embedstamp/issues"
+
+[project.scripts]
+embedstamp = "embedstamp.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "chromadb>=1.5.9"]
+
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["real: needs real fastembed models and network on first run (EMBEDSTAMP_REAL=1)"]

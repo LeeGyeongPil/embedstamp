@@ -1,0 +1,160 @@
+Simmer the tomato sauce with garlic and basil for twenty minutes before adding pasta.
+Fresh bread needs yeast, flour, water and a long slow rise in a warm kitchen.
+Sear the steak in a hot cast iron pan and let it rest before slicing.
+A pinch of salt makes chocolate cookies taste sweeter and richer.
+Roast vegetables at high heat so the edges caramelize and turn golden.
+Whisk eggs with milk and fold gently to make a fluffy omelette.
+Marinate chicken in yogurt and spices overnight for tender grilled skewers.
+Rice should be rinsed until the water runs clear, then steamed with a tight lid.
+Knead the pizza dough until smooth and stretch it thin before baking in a very hot oven.
+Soup tastes better the next day because the flavors have time to blend.
+Sharpen your kitchen knife regularly because a dull blade slips and cuts fingers.
+Toast spices in a dry pan to release their aroma before grinding.
+Poach salmon gently in broth with lemon slices and fresh dill.
+Use a thermometer to bake a cake evenly and avoid a raw center.
+Pickle cucumbers in vinegar, sugar and mustard seeds for a crunchy snack.
+Fry dumplings until the bottom is crisp, then add water and steam them.
+Slow cooked beef stew with carrots and potatoes warms a cold winter evening.
+Mix olive oil, lemon juice and herbs into a bright salad dressing.
+Caramelize onions slowly over low heat for a sweet base in French onion soup.
+Let the dough proof twice for a lighter crumb in homemade bread rolls.
+Tomato seedlings need bright light and warm soil to grow strong stems.
+Compost kitchen scraps and leaves to feed your garden beds with rich humus.
+Water the lawn early in the morning so the sun does not evaporate it.
+Prune rose bushes in late winter to encourage healthy blooms in spring.
+Mulch around young trees keeps the soil moist and suppresses weeds.
+Sunflowers follow the sun and attract bees to the vegetable garden.
+Plant garlic cloves in autumn and harvest the bulbs the following summer.
+Aphids on the leaves can be washed off with soapy water or ladybugs.
+Raised garden beds drain well and warm up early in the growing season.
+Rotate crops each year to keep soil healthy and reduce plant disease.
+Herbs like basil and mint grow well in pots on a sunny windowsill.
+Fertilize the flower beds with compost tea during the blooming season.
+Bulbs such as tulips and daffodils must be planted before the first frost.
+Thin carrot seedlings so each root has room to swell in loose soil.
+Hang a bird feeder near the garden to welcome sparrows and finches.
+Greenhouses protect delicate seedlings from frost and strong wind.
+Dead heading faded flowers keeps petunias blooming all summer long.
+Drip irrigation delivers water to the roots and saves a lot of water.
+Cover strawberry plants with a net so birds cannot steal the ripe fruit.
+Soil acidity affects blueberries, so test the pH before you plant shrubs.
+Jupiter is the largest planet and has dozens of moons orbiting around it.
+A telescope with a wide aperture gathers more light from faint galaxies.
+The Milky Way is a spiral galaxy containing hundreds of billions of stars.
+A lunar eclipse happens when Earth passes between the sun and the moon.
+Comets grow bright tails when ice melts as they approach the sun.
+Saturn rings are made of ice particles and rocky debris orbiting the planet.
+Black holes bend light because their gravity is so strong that nothing escapes.
+Astronomers measure the distance to stars using parallax and bright supernovae.
+Mars has polar ice caps and the tallest volcano in the solar system.
+A light year is the distance light travels in one year through space.
+Meteor showers appear when Earth crosses the dusty trail of a comet.
+Neutron stars are the dense remains of massive stars after a supernova.
+The International Space Station orbits Earth every ninety minutes.
+Nebulae are clouds of gas and dust where new stars are born.
+Rockets burn fuel to reach orbital speed and escape the atmosphere.
+Telescopes in orbit avoid the blur caused by air above our planet.
+The moon causes ocean tides with its gravitational pull on the sea.
+Exoplanets are found when a star dims slightly as a planet crosses its disk.
+Dark matter holds galaxies together though no telescope can see it directly.
+Venus is hotter than Mercury because thick clouds trap heat in its atmosphere.
+An emergency fund should cover three to six months of living expenses.
+Compound interest makes savings grow faster the longer you leave them invested.
+Index funds offer low fees and broad diversification across many companies.
+A budget lists income and expenses so you can see where money goes each month.
+Pay off credit card debt first because its interest rate is usually very high.
+Inflation reduces the purchasing power of cash held in a bank account.
+A mortgage spreads the cost of a house over decades with monthly payments.
+Diversify your portfolio between stocks, bonds and cash to reduce risk.
+Tax deductions lower your taxable income and the amount you owe each year.
+Retirement accounts let your investments grow with tax advantages.
+A credit score rises when you pay bills on time and keep balances low.
+Dividends are shares of company profit paid to stockholders each quarter.
+Insurance protects your savings from large unexpected medical or car bills.
+Track subscriptions monthly because small recurring fees add up quickly.
+Rent versus buy depends on mortgage rates, home prices and how long you stay.
+Bond prices fall when interest rates rise, which surprises many investors.
+Set up automatic transfers so savings happen before you can spend the money.
+Negotiate your salary using market data and a list of your achievements.
+Currency exchange rates change daily and affect the cost of foreign travel.
+A sinking fund saves a little each month for a planned large purchase.
+Good hiking boots with ankle support prevent blisters on long mountain trails.
+Pack water, a map, a headlamp and snacks before heading up the trail.
+Check the weather forecast because storms on a summit can be dangerous.
+Trekking poles reduce strain on your knees during steep descents.
+Camp at least seventy meters from rivers and leave no trace behind.
+A compass and a paper map still work when your phone battery dies.
+Start the climb early to reach the summit before afternoon clouds roll in.
+Layered clothing lets you adjust to cold mornings and warm afternoons on the trail.
+Wool socks keep your feet warm and dry when crossing a wet valley.
+Backpacks should carry most of the weight on your hips instead of your shoulders.
+Wild camping needs a light tent, a sleeping bag and a small stove.
+Trail markers painted on rocks and trees show the path through the forest.
+Altitude sickness causes headaches, so climb slowly and drink plenty of water.
+Following a ridge gives wide views of lakes, valleys and distant peaks.
+Bring a first aid kit with bandages for blisters and sprains on the trail.
+Autumn hikes reward you with colorful leaves and quiet mountain paths.
+Filter stream water or use tablets before drinking it on a backcountry trip.
+Share your route with a friend before a solo hike into remote country.
+Waterfalls are most powerful in spring when snow melt fills the rivers.
+Night hiking with a headlamp lets you see stars far from city lights.
+A function should do one thing well and have a clear descriptive name.
+Unit tests catch bugs early and make refactoring safer for the whole team.
+Version control with git records every change to the source code.
+A hash map gives constant time lookups for keys in most programs.
+Recursion solves a problem by calling the same function on smaller input.
+Code review finds mistakes and spreads knowledge among developers.
+Type hints help editors find bugs in Python code before you run it.
+Caching stores expensive results so the program does not recompute them.
+An API endpoint accepts a request and returns a JSON response to the client.
+Database indexes speed up queries but slow down writes slightly.
+Logging errors with context makes debugging production servers much easier.
+Continuous integration runs the test suite automatically on every commit.
+A compiler translates source code into machine instructions for the processor.
+Asynchronous code lets a program wait for network calls without blocking.
+Refactoring improves the structure of code without changing its behavior.
+Docker containers package an application with its libraries for consistent deployment.
+SQL joins combine rows from two tables using a shared column.
+Memory leaks happen when a program keeps references to objects it no longer needs.
+Encryption protects passwords and personal data stored on the server.
+Sorting algorithms such as quicksort and mergesort run in logarithmic depth.
+Regular aerobic exercise strengthens the heart and improves sleep quality.
+Adults need seven to nine hours of sleep to recover and concentrate well.
+Protein helps muscles repair after a hard strength training workout.
+Stretching before running warms the muscles and lowers the risk of injury.
+Drink water throughout the day because dehydration causes tiredness and headaches.
+Vegetables, fruit and whole grains supply fiber that supports digestion.
+Meditation and slow breathing reduce stress and lower blood pressure.
+Walking thirty minutes a day improves mood and helps control body weight.
+Vitamin D from sunlight keeps bones strong, especially during the winter.
+Too much sugar raises the risk of diabetes and tooth decay.
+Rest days let the body rebuild muscle between intense gym sessions.
+Good posture at a desk prevents back pain and neck stiffness.
+Regular health checkups can find high cholesterol before symptoms appear.
+Yoga improves balance and flexibility and calms the mind after work.
+Interval training alternates fast sprints with slow recovery to burn calories.
+Limit caffeine in the evening so it does not disturb your sleep.
+Cycling is a low impact exercise that is gentle on the joints.
+Washing hands often with soap prevents the spread of colds and flu.
+A balanced breakfast with oats, fruit and nuts keeps energy steady.
+Warm up for ten minutes before lifting heavy weights at the gym.
+A piano has eighty eight keys and can play melody and harmony together.
+Guitar chords such as G, C and D are the first ones beginners learn.
+A metronome keeps a steady tempo while you practice difficult passages.
+Jazz musicians improvise solos over chord progressions in the middle of a song.
+The violin is tuned in perfect fifths and played with a horsehair bow.
+Drummers keep the beat with the kick drum and the snare drum.
+A major scale sounds bright while a minor scale sounds sad.
+Choirs blend soprano, alto, tenor and bass voices into rich harmony.
+Reading sheet music means following notes, rhythm and dynamics on the staff.
+A good microphone and a quiet room improve a home recording dramatically.
+Orchestras are led by a conductor who shapes tempo and expression.
+Synthesizers create sounds by shaping electronic waveforms with filters.
+Practice scales slowly every day to build finger strength and accuracy.
+A bass guitar anchors the groove between the drums and the harmony.
+Songwriters often start with a chord progression and add a melody on top.
+Vinyl records are played with a needle that follows grooves in the plastic.
+Singers warm up their voices with humming and gentle lip trills.
+Folk music passes simple melodies from generation to generation by ear.
+A flute produces sound when air splits across the edge of the mouthpiece.
+Concert halls are designed so that every seat can hear the orchestra clearly.
