@@ -1,6 +1,6 @@
 [project]
 name = "embedstamp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Stamp a vector index with its embedding model's fingerprint, detect silent model swaps at query time, and re-embed safely."
 readme = "README.md"
 license = "MIT"

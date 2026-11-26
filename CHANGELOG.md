@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-11-27
+
+### Changed
+
+- CI: update GitHub Actions to Node 24 runtimes and pin the uv version. No library changes.
+
 ## [0.1.0] - 2026-11-27
 
 ### Added
