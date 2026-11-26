@@ -10,8 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      # Node 24 런타임으로 도는 릴리스에 고정한다(v4·v6 태그는 node20 — 러너에서 Node 20 이 빠졌다)
+      - uses: actions/checkout@v6.1.0
+      - uses: astral-sh/setup-uv@v10.4.0
+        with:
+          version: "0.13.6"   # uv.lock 을 만든 uv 와 같은 버전 — `--locked` 판정이 uv 버전에 따라 흔들리지 않게
       - run: uv python install
       - run: uv sync --locked
       - run: uv run pytest -q
