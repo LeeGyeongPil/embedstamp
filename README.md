@@ -154,10 +154,10 @@ EmbeddingMismatchError caught: different (model_name_changed, probe_cosine_low)
 
 ### 2. Chroma collection with a Guard
 
-Vectors are added directly (`embedding_function=None`), which is exactly the case where Chroma's own configuration check has nothing to compare. `examples/chroma_guard.py --mock` (needs `chromadb`, which `uv sync` installs as a dev dependency):
+Vectors are added directly (`embedding_function=None`), which is exactly the case where Chroma's own configuration check has nothing to compare. `examples/chroma_guard.py --mock` (needs the `chroma` extra; in a clone `uv run --extra chroma` installs it):
 
 ```bash
-uv run python examples/chroma_guard.py --mock
+uv run --extra chroma python examples/chroma_guard.py --mock
 ```
 
 ```text
@@ -168,9 +168,9 @@ swapped model: EmbeddingMismatchError caught -> different ('model_name_changed',
 Without `--mock` the script uses two real fastembed models and downloads them on the first run (about 167 MB, see [Troubleshooting](#troubleshooting) if it hangs). Install the extra first:
 
 ```bash
-uv sync --extra fastembed                      # in a clone (chromadb is already a dev dependency)
+uv sync --extra chroma --extra fastembed        # in a clone
 pip install "embedstamp[chroma,fastembed]"     # in your own project
-uv run python examples/chroma_guard.py
+uv run --extra chroma --extra fastembed python examples/chroma_guard.py
 ```
 
 The core of it in your own code. Vectors go in directly, the fingerprint goes into the collection metadata, and the `Guard` checks before the first query:
@@ -299,7 +299,7 @@ The embedder matches the index.
 ```
 
 - The first run fills `kb__green` and stops. `--from fake:a` adds the old-versus-new `overlap@10` line.
-- The second run finds every document already in green (`embedded=0 skipped=30`), so it re-embeds nothing, checks self-recall again and switches. The last line is the fingerprint check measured right after the switch.
+- The second run finds every document already in green (`skipped=30`, `embedded=0`), so it re-embeds nothing, checks self-recall again and switches. The last line is the fingerprint check measured right after the switch.
 - `kb` now serves `fake:b`. The old data stays in `kb__blue_<UTC date>`; delete it yourself when you no longer need it.
 
 ## Settings and language
@@ -331,6 +331,7 @@ embedstamp does not detect changes in your documents, and it does not replace ev
 | `norm_changed` although cosine is 1.0 | Vectors are scaled differently (normalisation switched on or off) | Re-embed, or use the same normalisation setting |
 | `FingerprintTooLargeError` | The store's metadata limit is smaller than the fingerprint | `stamp(..., compact=True)` (about 2 KB) |
 | `ImportError: ChromaStore needs the optional dependency 'chromadb'` | The `chroma` extra is missing | `pip install "embedstamp[chroma]"` (in a clone: `uv sync --extra chroma`) |
+| `ModuleNotFoundError: No module named 'chromadb'` from `examples/chroma_guard.py` in a clone | `uv sync` installs the core only; the example imports `chromadb` itself | `uv run --extra chroma python examples/chroma_guard.py --mock` |
 | `ImportError: FastEmbedEmbedder needs the optional dependency 'fastembed'`, or `chroma_guard.py` without `--mock` fails | The `fastembed` extra is missing (`uv sync` alone does not install it) | `pip install "embedstamp[fastembed]"` (in a clone: `uv sync --extra fastembed`) |
 | `embedstamp: command not found` in a clone | The command lives in the project's virtual environment | `uv run embedstamp ...` |
 | `migrate` says `has no documents, so there is nothing to re-embed` (exit 1) | The index was only stamped; `stamp` writes no documents | Add documents with your vector store or `LocalIndex.add(...)`, or point `--store` at a filled index (see [Migrating from the command line](#migrating-from-the-command-line)) |
@@ -362,14 +363,13 @@ embedstamp does not detect changes in your documents, and it does not replace ev
 
 ```bash
 uv sync
-uv run pytest -q
+uv run pytest -q                    # core: numpy only, the Chroma tests are skipped
+uv run --extra chroma pytest -q     # everything, including the Chroma integration tests
 ```
 
-```text
-121 passed, 1 skipped
-```
+Both should finish with no failures. The real-model test is skipped unless you ask for it: `EMBEDSTAMP_REAL=1 uv run --extra fastembed pytest -q -m real` (downloads about 167 MB once).
 
-The skipped test uses real models; run it with `EMBEDSTAMP_REAL=1 uv run pytest -q -m real`.
+CI runs only the core command on every push and pull request. The Chroma tests run in a separate `extras` job that you start by hand (Actions → ci → Run workflow).
 
 ## License
 

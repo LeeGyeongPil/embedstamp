@@ -154,10 +154,10 @@ EmbeddingMismatchError caught: different (model_name_changed, probe_cosine_low)
 
 ### 2. Guard 를 붙인 Chroma 컬렉션
 
-벡터를 직접 넣는(`embedding_function=None`) 경우로, Chroma 자체 설정 검사가 비교할 것이 없는 바로 그 상황입니다. `examples/chroma_guard.py --mock`(`chromadb` 필요, `uv sync`가 개발 의존성으로 설치):
+벡터를 직접 넣는(`embedding_function=None`) 경우로, Chroma 자체 설정 검사가 비교할 것이 없는 바로 그 상황입니다. `examples/chroma_guard.py --mock`(`chroma` extra 필요, clone 한 레포에서는 `uv run --extra chroma` 가 설치):
 
 ```bash
-uv run python examples/chroma_guard.py --mock
+uv run --extra chroma python examples/chroma_guard.py --mock
 ```
 
 ```text
@@ -168,9 +168,9 @@ swapped model: EmbeddingMismatchError caught -> different ('model_name_changed',
 `--mock` 없이 실행하면 실제 fastembed 모델 두 개를 쓰며, 처음 실행 때 내려받습니다(약 167 MB, 멈추면 [문제 해결](#문제-해결) 참고). 먼저 extra 를 설치합니다.
 
 ```bash
-uv sync --extra fastembed                      # clone 한 레포에서(chromadb 는 이미 개발 의존성)
+uv sync --extra chroma --extra fastembed        # clone 한 레포에서
 pip install "embedstamp[chroma,fastembed]"     # 내 프로젝트에서
-uv run python examples/chroma_guard.py
+uv run --extra chroma --extra fastembed python examples/chroma_guard.py
 ```
 
 내 코드에서 쓰는 핵심 부분입니다. 벡터는 직접 넣고, 지문은 컬렉션 메타데이터에 저장하며, `Guard` 가 첫 질의 전에 검사합니다.
@@ -299,7 +299,7 @@ status: same  min_cos=1.0000  mean_cos=1.0000
 ```
 
 - 첫 실행은 `kb__green` 을 채우고 멈춥니다. `--from fake:a` 를 주면 옛 결과와 새 결과의 `overlap@10` 줄이 더해집니다.
-- 두 번째 실행은 모든 문서가 이미 green 에 있음을 보고(`embedded=0 skipped=30`) 아무것도 다시 임베딩하지 않고, 자기 회수율을 다시 확인한 뒤 전환합니다. 마지막 줄은 전환 직후 잰 지문 검사 결과입니다.
+- 두 번째 실행은 모든 문서가 이미 green 에 있음을 보고(`skipped=30`, `embedded=0`) 아무것도 다시 임베딩하지 않고, 자기 회수율을 다시 확인한 뒤 전환합니다. 마지막 줄은 전환 직후 잰 지문 검사 결과입니다.
 - 이제 `kb` 는 `fake:b` 로 운영됩니다. 옛 데이터는 `kb__blue_<UTC 날짜>` 에 남으니 필요 없어지면 직접 지우세요.
 
 ## 설정과 언어
@@ -331,6 +331,7 @@ embedstamp는 문서 내용의 변화를 감지하지 않으며 평가를 대신
 | 코사인은 1.0인데 `norm_changed` | 벡터 크기가 다름(정규화를 켜거나 끔) | 다시 임베딩하거나 같은 정규화 설정을 사용 |
 | `FingerprintTooLargeError` | 저장소 메타데이터 한도가 지문보다 작음 | `stamp(..., compact=True)`(약 2 KB) |
 | `ImportError: ChromaStore needs the optional dependency 'chromadb'` | `chroma` extra 없음 | `pip install "embedstamp[chroma]"`(clone 한 레포에서는 `uv sync --extra chroma`) |
+| clone 한 레포에서 `examples/chroma_guard.py` 가 `ModuleNotFoundError: No module named 'chromadb'` | `uv sync` 는 코어만 설치하고, 이 예제는 `chromadb` 를 직접 import 함 | `uv run --extra chroma python examples/chroma_guard.py --mock` |
 | `ImportError: FastEmbedEmbedder needs the optional dependency 'fastembed'`, 또는 `chroma_guard.py` 를 `--mock` 없이 실행하면 실패 | `fastembed` extra 없음(`uv sync` 만으로는 설치되지 않음) | `pip install "embedstamp[fastembed]"`(clone 한 레포에서는 `uv sync --extra fastembed`) |
 | clone 한 레포에서 `embedstamp: command not found` | 명령이 프로젝트 가상환경 안에 있음 | `uv run embedstamp ...` |
 | `migrate` 가 `문서가 없어 다시 임베딩할 것이 없습니다` 로 끝남(종료 코드 1) | 지문만 찍은 인덱스. `stamp` 는 문서를 넣지 않음 | 벡터 저장소나 `LocalIndex.add(...)` 로 문서를 넣거나, `--store` 를 문서가 있는 인덱스로 지정([명령줄로 마이그레이션하기](#명령줄로-마이그레이션하기) 참고) |
@@ -362,14 +363,13 @@ embedstamp는 문서 내용의 변화를 감지하지 않으며 평가를 대신
 
 ```bash
 uv sync
-uv run pytest -q
+uv run pytest -q                    # 코어: numpy 만, Chroma 테스트는 건너뜀
+uv run --extra chroma pytest -q     # 전체: Chroma 통합 테스트 포함
 ```
 
-```text
-121 passed, 1 skipped
-```
+둘 다 실패 없이 끝나야 합니다. 실제 모델 테스트는 직접 요청할 때만 돕니다: `EMBEDSTAMP_REAL=1 uv run --extra fastembed pytest -q -m real`(처음 한 번 약 167 MB 내려받음).
 
-건너뛴 테스트는 실제 모델을 쓰며 `EMBEDSTAMP_REAL=1 uv run pytest -q -m real`로 실행합니다.
+CI 는 push·pull request 마다 코어 명령만 돌립니다. Chroma 테스트는 손으로 시작하는 별도 `extras` 잡에서 돕니다(Actions → ci → Run workflow).
 
 ## 라이선스
 
