@@ -369,7 +369,7 @@ uv run --extra chroma pytest -q     # everything, including the Chroma integrati
 
 Both should finish with no failures. The real-model test is skipped unless you ask for it: `EMBEDSTAMP_REAL=1 uv run --extra fastembed pytest -q -m real` (downloads about 167 MB once).
 
-CI runs only the core command on every push and pull request. The Chroma tests run in a separate `extras` job that you start by hand (Actions → ci → Run workflow).
+CI runs the core job on every push and pull request: the core tests, `embedstamp demo` and the quickstart example. The Chroma tests run in a separate `extras` job that you start by hand (Actions → ci → Run workflow).
 
 ## License
 

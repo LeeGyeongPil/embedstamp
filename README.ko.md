@@ -369,7 +369,7 @@ uv run --extra chroma pytest -q     # 전체: Chroma 통합 테스트 포함
 
 둘 다 실패 없이 끝나야 합니다. 실제 모델 테스트는 직접 요청할 때만 돕니다: `EMBEDSTAMP_REAL=1 uv run --extra fastembed pytest -q -m real`(처음 한 번 약 167 MB 내려받음).
 
-CI 는 push·pull request 마다 코어 명령만 돌립니다. Chroma 테스트는 손으로 시작하는 별도 `extras` 잡에서 돕니다(Actions → ci → Run workflow).
+CI 는 push·pull request 마다 core 잡을 돌려 core 테스트, `embedstamp demo`, quickstart 예제를 실행합니다. Chroma 테스트는 손으로 시작하는 별도 `extras` 잡에서 돕니다(Actions → ci → Run workflow).
 
 ## 라이선스
 
