@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.1.4] - 2026-11-27
+
+### Changed
+
+- CI: simplified workflow — `actions/checkout@v4`, `actions/setup-python@v5` (Python 3.12),
+  `uv==0.13.6` from PyPI, then the core tests, demo and quickstart. No library changes.
+
 ## [0.1.3] - 2026-11-27
 
 ### Changed
