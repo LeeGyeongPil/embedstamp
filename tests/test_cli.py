@@ -139,8 +139,8 @@ def test_usage_errors(capsys):
     assert "error" in capsys.readouterr().err
 
 
-def test_check_on_missing_chroma_dir_creates_nothing(tmp_path, capsys):
-    pytest.importorskip("chromadb")
+@pytest.mark.chroma
+def test_check_on_missing_chroma_dir_creates_nothing(tmp_path, capsys, chromadb):
     target = tmp_path / "nope"
     code = main(["check", "--store", f"chroma://{target}/x", "--embedder", "fake:a"], env={})
     assert code != 0 and not target.exists()

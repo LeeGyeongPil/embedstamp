@@ -514,7 +514,7 @@ wheels = [
 
 [[package]]
 name = "embedstamp"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
@@ -530,7 +530,6 @@ fastembed = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "chromadb" },
     { name = "pytest" },
 ]
 
@@ -543,10 +542,7 @@ requires-dist = [
 provides-extras = ["chroma", "fastembed"]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "chromadb", specifier = ">=1.5.9" },
-    { name = "pytest", specifier = ">=8" },
-]
+dev = [{ name = "pytest", specifier = ">=8" }]
 
 [[package]]
 name = "fastembed"

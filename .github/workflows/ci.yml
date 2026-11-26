@@ -1,24 +1,88 @@
 # 키·모델 없이 mock 모드로 전체 흐름을 검증한다.
+# core 잡(필수): 코어 의존성(numpy) + pytest 만 설치한다 — 무거운 선택 의존성·모델 다운로드·시간 상한 테스트는 돌리지 않는다.
+# extras 잡(수동): Actions 화면의 "Run workflow" 로만 돈다 — chroma extra 를 설치해 Chroma 통합 테스트를 돌린다.
 name: ci
 on:
   push:
   pull_request:
-  schedule:
-    - cron: "17 3 * * 1"   # 매주 월요일 — 의존성·런타임이 바뀌어 깨지지 않았는지 정기 확인
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  test:
+  core:
     runs-on: ubuntu-latest
+    timeout-minutes: 20   # 어느 단계가 멈추면 6시간이 아니라 20분 뒤 그 단계 이름으로 실패한다
+    env:
+      PYTHONFAULTHANDLER: "1"   # 네이티브 확장이 비정상 종료하면 파이썬 스택을 로그에 남긴다
     steps:
-      # Node 24 런타임으로 도는 릴리스에 고정한다(v4·v6 태그는 node20 — 러너에서 Node 20 이 빠졌다)
-      - uses: actions/checkout@v6.1.0
-      - uses: astral-sh/setup-uv@v10.4.0
+      # 둘 다 Node 24 로 도는 실제 릴리스 태그다. setup-uv 는 v8 부터 @v10 같은 메이저 태그를 만들지 않는다.
+      - name: Check out
+        uses: actions/checkout@v6.1.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.4.0
         with:
-          version: "0.13.6"   # uv.lock 을 만든 uv 와 같은 버전 — `--locked` 판정이 uv 버전에 따라 흔들리지 않게
-      - run: uv python install
-      - run: uv sync --locked
-      - run: uv run pytest -q
+          version: "0.13.6"   # uv.lock 을 만든 uv
+      - name: Install Python from .python-version
+        run: uv python install
+      - name: Install locked dependencies (core + pytest)
+        run: uv sync --locked
+      - name: Show versions
+        run: |
+          uv --version
+          uv run python -c "import platform, sys, numpy; print(sys.version); print(platform.platform()); print('numpy', numpy.__version__)"
+      - name: Run tests (mock mode)
+        run: uv run pytest -q -m "not timing"
         env:
-          ANONYMIZED_TELEMETRY: "False"
-      - run: uv run embedstamp demo
-      - run: uv run python examples/quickstart.py
+          PYTEST_ADDOPTS: "--junitxml=pytest-report.xml"   # 실패하면 아래 단계가 실패한 테스트를 주석(annotation)으로 올린다
+      - name: Run demo
+        run: uv run embedstamp demo
+      - name: Run quickstart example
+        run: uv run python examples/quickstart.py
+      - name: Annotate failed tests
+        if: failure()
+        run: |
+          # 로그를 열지 않아도 실행 요약 화면에서 실패한 테스트 이름과 메시지가 보이게 한다
+          test -f pytest-report.xml || exit 0
+          python3 - <<'EOF'
+          import xml.etree.ElementTree as ET
+
+          def escape(text):
+              return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+          shown = 0
+          for case in ET.parse("pytest-report.xml").getroot().iter("testcase"):
+              for bad in case.findall("failure") + case.findall("error"):
+                  name = f"{case.get('classname')}::{case.get('name')}"
+                  message = (bad.get("message") or bad.text or "")[:500]
+                  if shown < 10:
+                      print(f"::error::FAILED {escape(name)} - {escape(message)}")
+                  shown += 1
+          print(f"{shown} failed test(s)")
+          EOF
+
+  extras:
+    # 수동 실행 전용 — push·PR 의 성공 여부에 영향을 주지 않는다
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANONYMIZED_TELEMETRY: "False"     # chromadb 사용 통계 전송 끄기
+      EMBEDSTAMP_REQUIRE_CHROMA: "1"    # chromadb 를 못 불러오면 건너뛰지 않고 실패한다
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6.1.0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.4.0
+        with:
+          version: "0.13.6"
+      - name: Install Python from .python-version
+        run: uv python install
+      - name: Install locked dependencies (core + pytest + chroma extra)
+        run: uv sync --locked --extra chroma
+      - name: Show versions
+        run: |
+          uv --version
+          uv run --extra chroma python -c "import chromadb, numpy; print('numpy', numpy.__version__, '/ chromadb', chromadb.__version__)"
+      - name: Run Chroma tests
+        run: uv run --extra chroma pytest -q -rs -m chroma

@@ -15,8 +15,8 @@ def fresh_lazy_names(monkeypatch):
         monkeypatch.delitem(embedstamp.__dict__, name, raising=False)
 
 
-def test_chroma_store_is_importable_from_the_package(fresh_lazy_names):
-    pytest.importorskip("chromadb")
+@pytest.mark.chroma
+def test_chroma_store_is_importable_from_the_package(fresh_lazy_names, chromadb):
     from embedstamp import ChromaStore
     from embedstamp.stores.chroma import ChromaStore as Direct
 
@@ -35,6 +35,25 @@ def test_fastembed_embedder_without_extra_says_how_to_install(fresh_lazy_names, 
     monkeypatch.setitem(sys.modules, "fastembed", None)
     with pytest.raises(ImportError, match=r"embedstamp\[fastembed\]"):
         from embedstamp import FastEmbedEmbedder  # noqa: F401
+
+
+@pytest.mark.parametrize(
+    ("package", "extra", "load"),
+    [
+        # 최상위가 아닌 모듈 경로(직접 import·resolve_embedder·chroma:// 저장소)도 같은 안내를 낸다 (Q-10)
+        ("fastembed", "fastembed", lambda: embedstamp.resolve_embedder("fastembed:BAAI/bge-small-en-v1.5")),
+        ("chromadb", "chroma", lambda: embedstamp.resolve_store("chroma://./db/docs")),
+    ],
+)
+def test_direct_paths_without_extra_give_both_install_commands(monkeypatch, tmp_path, package, extra, load):
+    monkeypatch.chdir(tmp_path)  # 혹시 무언가 만들어도 임시 폴더 안에서
+    monkeypatch.setitem(sys.modules, package, None)
+    with pytest.raises(ImportError) as info:
+        load()
+    message = str(info.value)
+    assert f'pip install "embedstamp[{extra}]"' in message
+    assert f"uv sync --extra {extra}" in message
+    assert f"needs the optional dependency {package!r}" in message
 
 
 def test_unknown_name_is_still_an_attribute_error():

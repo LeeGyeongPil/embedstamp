@@ -1,7 +1,5 @@
-import chromadb
 import numpy as np
 import pytest
-from chromadb.config import Settings
 
 from embedstamp import (
     EmbedstampError,
@@ -27,8 +25,8 @@ def make_local(tmp_path):
     return idx
 
 
-def make_chroma(tmp_path):
-    client = chromadb.PersistentClient(path=str(tmp_path / "db"), settings=Settings(anonymized_telemetry=False))
+def make_chroma(tmp_path, chromadb, settings):
+    client = chromadb.PersistentClient(path=str(tmp_path / "db"), settings=settings)
     col = client.get_or_create_collection("docs", metadata={"hnsw:space": "cosine"}, embedding_function=None)
     embed = FakeEmbedder("fake:a")
     col.add(ids=IDS, documents=DOCS, embeddings=embed(DOCS).tolist())
@@ -37,9 +35,14 @@ def make_chroma(tmp_path):
     return store
 
 
-@pytest.fixture(params=["local", "chroma"])
+# local 은 항상 돌고, chroma 는 chroma 마커가 붙어 chromadb 가 없으면 건너뛴다(CI 필수 잡에서도 빠진다)
+@pytest.fixture(params=["local", pytest.param("chroma", marks=pytest.mark.chroma)])
 def store(request, tmp_path):
-    return make_local(tmp_path) if request.param == "local" else make_chroma(tmp_path)
+    if request.param == "local":
+        return make_local(tmp_path)
+    # chroma 일 때만 chromadb 픽스처를 부른다 — local 매개변수는 chromadb 없이도 돈다
+    chromadb = request.getfixturevalue("chromadb")
+    return make_chroma(tmp_path, chromadb, request.getfixturevalue("chroma_settings"))
 
 
 def names(store):

@@ -1,6 +1,6 @@
 [project]
 name = "embedstamp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Stamp a vector index with its embedding model's fingerprint, detect silent model swaps at query time, and re-embed safely."
 readme = "README.md"
 license = "MIT"
@@ -29,7 +29,7 @@ Issues = "https://github.com/LeeGyeongPil/embedstamp/issues"
 embedstamp = "embedstamp.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8", "chromadb>=1.5.9"]
+dev = ["pytest>=8"]
 
 [build-system]
 requires = ["uv_build>=0.13,<0.14"]
@@ -37,4 +37,8 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["real: needs real fastembed models and network on first run (EMBEDSTAMP_REAL=1)"]
+markers = [
+    "real: needs real fastembed models and network on first run (EMBEDSTAMP_REAL=1)",
+    "chroma: needs the chroma extra (skipped without chromadb unless EMBEDSTAMP_REQUIRE_CHROMA=1)",
+    "timing: wall-clock limits, run locally (excluded from the required CI job)",
+]

@@ -1,21 +1,26 @@
+"""Chroma integration (extra ``chroma``). Skipped without chromadb; see the ``chromadb`` fixture."""
+
 import warnings
 
-import chromadb
 import pytest
-from chromadb.config import Settings
 
 from embedstamp import EmbeddingMismatchError, FakeEmbedder, Fingerprint, Guard, stamp
 from embedstamp.stores.chroma import ChromaStore
 
+# 이 파일의 모든 테스트는 chromadb 가 필요하다 — 코어 환경(uv sync)에서는 건너뛰고, CI 필수 잡에서 빠진다
+pytestmark = pytest.mark.chroma
+
 DOCS = ["Reset your password in settings.", "Invoices are due in thirty days.", "Plants make sugar."]
 
 
-def open_client(path):
-    return chromadb.PersistentClient(path=str(path), settings=Settings(anonymized_telemetry=False))
+@pytest.fixture
+def open_client(chromadb, chroma_settings):
+    """Open (or re-open) a persistent Chroma database in a directory."""
+    return lambda path: chromadb.PersistentClient(path=str(path), settings=chroma_settings)
 
 
 @pytest.fixture
-def collection(tmp_path):
+def collection(tmp_path, open_client):
     client = open_client(tmp_path)
     col = client.get_or_create_collection(
         "docs", metadata={"hnsw:space": "cosine", "owner": "team-x"}, embedding_function=None
@@ -24,7 +29,7 @@ def collection(tmp_path):
     return col
 
 
-def test_fingerprint_is_stored_in_metadata_and_keeps_existing_keys(collection, tmp_path):
+def test_fingerprint_is_stored_in_metadata_and_keeps_existing_keys(collection, tmp_path, open_client):
     store = ChromaStore(collection)
     assert store.load() is None
     fp = stamp(FakeEmbedder("fake:a"), model="fake:a")
