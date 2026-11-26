@@ -104,21 +104,16 @@ def test_jobs_pin_uv_and_have_a_timeout(name):
     commands = run_commands(name)
     assert 'python -m pip install "uv==0.13.6"' in commands
     assert re.search(r"^    timeout-minutes: \d+$", text, re.M)
-    # uv 가 파이썬을 따로 내려받거나 PATH 에서 고르지 않고 setup-python 이 준비한 파이썬을 쓴다
-    assert re.search(r'^      UV_PYTHON_DOWNLOADS: "never"$', text, re.M)
-    assert re.search(r"^        id: python$", text, re.M)
-    assert 'echo "UV_PYTHON=${{ steps.python.outputs.python-path }}" >> "$GITHUB_ENV"' in commands
 
 
 @pytest.mark.parametrize("name", ["core", "extras"])
-def test_jobs_use_only_official_actions_pinned_to_a_commit_sha(name):
-    # 태그 대신 전체 SHA 로 고정하고 GitHub 공식(actions/) 액션만 쓰면
-    # "SHA 고정 필수"·"공식 액션만 허용" 정책에서도 잡이 시작 단계에서 거부되지 않는다
+def test_jobs_use_official_actions_on_major_tags(name):
+    # 가장 단순하고 확실히 존재하는 참조 — GitHub 공식 액션의 메이저 태그만 쓴다
     uses = [m.group(1) for m in re.finditer(r"^\s*(?:- )?uses:\s*(\S+)", job_text(name), re.M)]
-    assert uses, "job has no uses: steps"
-    for ref in uses:
-        assert re.fullmatch(r"actions/[a-z-]+@[0-9a-f]{40}", ref), ref
-    assert any(ref.startswith("actions/setup-python@") for ref in uses)
+    assert uses == ["actions/checkout@v4", "actions/setup-python@v5"]
+    assert re.search(r'^          python-version: "3\.12"$', job_text(name), re.M)
+    # ${{ }} 식은 extras 잡의 if: 한 곳 밖에 쓰지 않는다
+    assert "${{" not in job_text(name)
 
 
 def test_extras_job_is_manual_and_requires_chromadb():

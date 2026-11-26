@@ -1,11 +1,6 @@
-# 키·모델 없이 mock 모드로 전체 흐름을 검증한다.
-# core 잡(필수): 코어 의존성(numpy) + pytest 만 설치한다 — 무거운 선택 의존성·모델 다운로드·시간 상한 테스트는 돌리지 않는다.
-# extras 잡(수동): Actions 화면의 "Run workflow" 로만 돈다 — chroma extra 를 설치해 Chroma 통합 테스트를 돌린다.
-#
-# 액션은 GitHub 공식 액션 두 개(checkout·setup-python)만 쓰고 전체 커밋 SHA 로 고정한다(뒤 주석이 그 SHA 의 릴리스 태그).
-# "공식 액션만 허용"·"SHA 고정 필수" 같은 Actions 정책이 켜져 있어도 잡이 시작 단계에서 거부되지 않는다.
-# uv 는 PyPI 의 uv==0.13.6(uv.lock 을 만든 버전)을 pip 로 설치하고, setup-python 이 준비한 파이썬 경로를 UV_PYTHON 으로 넘긴다
-# (uv 가 PATH 에서 파이썬을 찾거나 내려받는 데 기대지 않는다).
+# Mock mode only: no API keys, no model downloads.
+# core job (required): core dependencies (numpy) + pytest, then the demo and the quickstart example.
+# extras job (manual): runs only from "Run workflow" in the Actions tab and installs the chroma extra.
 name: ci
 on:
   push:
@@ -16,93 +11,38 @@ permissions:
 jobs:
   core:
     runs-on: ubuntu-latest
-    timeout-minutes: 15   # 어느 단계가 멈추면 6시간이 아니라 15분 뒤 그 단계 이름으로 실패한다
-    env:
-      PYTHONFAULTHANDLER: "1"       # 네이티브 확장이 비정상 종료하면 파이썬 스택을 로그에 남긴다
-      UV_PYTHON_DOWNLOADS: "never"  # uv 가 파이썬을 따로 내려받지 않는다 — Install uv 단계가 UV_PYTHON 에 setup-python 의 3.12 경로를 넣는다
+    timeout-minutes: 15
     steps:
-      - name: Check out
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803   # v6.1.0
-      - name: Set up Python from .python-version
-        id: python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1   # v6.3.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version-file: .python-version
+          python-version: "3.12"
       - name: Install uv
-        timeout-minutes: 5
-        run: |
-          python -m pip install "uv==0.13.6"
-          echo "UV_PYTHON=${{ steps.python.outputs.python-path }}" >> "$GITHUB_ENV"
-      - name: Install locked dependencies (core + pytest)
-        timeout-minutes: 5
+        run: python -m pip install "uv==0.13.6"
+      - name: Install locked dependencies
         run: uv sync --locked
-      - name: Show versions
-        run: |
-          uv --version
-          uv run python -c "import platform, sys, numpy; print(sys.version); print(platform.platform()); print('numpy', numpy.__version__)"
-      - name: Run tests (mock mode)
-        timeout-minutes: 5
+      - name: Run tests
         run: uv run pytest -q -m "not timing"
-        env:
-          PYTEST_ADDOPTS: "--junitxml=pytest-report.xml"   # 실패하면 아래 단계가 실패한 테스트를 주석(annotation)으로 올린다
       - name: Run demo
-        timeout-minutes: 2
         run: uv run embedstamp demo
       - name: Run quickstart example
-        timeout-minutes: 2
         run: uv run python examples/quickstart.py
-      - name: Annotate failed tests
-        if: failure()
-        run: |
-          # 로그를 열지 않아도 실행 요약 화면에서 실패한 테스트 이름과 메시지가 보이게 한다
-          test -f pytest-report.xml || exit 0
-          python3 - <<'EOF'
-          import xml.etree.ElementTree as ET
-
-          def escape(text):
-              return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-
-          shown = 0
-          for case in ET.parse("pytest-report.xml").getroot().iter("testcase"):
-              for bad in case.findall("failure") + case.findall("error"):
-                  name = f"{case.get('classname')}::{case.get('name')}"
-                  message = (bad.get("message") or bad.text or "")[:500]
-                  if shown < 10:
-                      print(f"::error::FAILED {escape(name)} - {escape(message)}")
-                  shown += 1
-          print(f"{shown} failed test(s)")
-          EOF
 
   extras:
-    # 수동 실행 전용 — push·PR 의 성공 여부에 영향을 주지 않는다
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      ANONYMIZED_TELEMETRY: "False"     # chromadb 사용 통계 전송 끄기
-      EMBEDSTAMP_REQUIRE_CHROMA: "1"    # chromadb 를 못 불러오면 건너뛰지 않고 실패한다
-      PYTHONFAULTHANDLER: "1"
-      UV_PYTHON_DOWNLOADS: "never"
+      ANONYMIZED_TELEMETRY: "False"
+      EMBEDSTAMP_REQUIRE_CHROMA: "1"
     steps:
-      - name: Check out
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803   # v6.1.0
-      - name: Set up Python from .python-version
-        id: python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1   # v6.3.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version-file: .python-version
+          python-version: "3.12"
       - name: Install uv
-        timeout-minutes: 5
-        run: |
-          python -m pip install "uv==0.13.6"
-          echo "UV_PYTHON=${{ steps.python.outputs.python-path }}" >> "$GITHUB_ENV"
-      - name: Install locked dependencies (core + pytest + chroma extra)
-        timeout-minutes: 15
+        run: python -m pip install "uv==0.13.6"
+      - name: Install locked dependencies with the chroma extra
         run: uv sync --locked --extra chroma
-      - name: Show versions
-        run: |
-          uv --version
-          uv run --extra chroma python -c "import chromadb, numpy; print('numpy', numpy.__version__, '/ chromadb', chromadb.__version__)"
       - name: Run Chroma tests
-        timeout-minutes: 10
         run: uv run --extra chroma pytest -q -rs -m chroma
