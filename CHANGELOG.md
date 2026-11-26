@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.3] - 2026-11-27
+
+### Changed
+
+- CI: uses only official GitHub actions (`actions/checkout`, `actions/setup-python`) pinned to full
+  commit SHAs, installs `uv==0.13.6` from PyPI, and hands the setup-python interpreter to uv
+  (`UV_PYTHON`, Python downloads off). Every install and test step has its own timeout; the core job
+  stops after 15 minutes.
+
 ## [0.1.2] - 2026-11-27
 
 ### Changed

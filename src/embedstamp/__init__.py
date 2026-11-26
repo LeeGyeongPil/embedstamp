@@ -40,7 +40,7 @@ if TYPE_CHECKING:  # pragma: no cover - type checkers see the lazy names as norm
     from .embedders.fastembed import FastEmbedEmbedder
     from .stores.chroma import ChromaStore
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 # 선택 의존성(extra)이 필요한 이름: 이름 -> (실제 모듈, 필요한 패키지, extra 이름).
 # import embedstamp 할 때는 불러오지 않고, 처음 꺼내 쓰는 순간 __getattr__ 이 불러온다.
