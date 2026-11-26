@@ -6,6 +6,8 @@ from collections.abc import Sequence
 
 import numpy as np
 
+from ..errors import missing_extra_error
+
 
 class FastEmbedEmbedder:
     """Callable wrapper around ``fastembed.TextEmbedding``.
@@ -17,10 +19,8 @@ class FastEmbedEmbedder:
     def __init__(self, model: str, **kwargs: object) -> None:
         try:
             from fastembed import TextEmbedding
-        except ImportError as exc:  # pragma: no cover - depends on the environment
-            raise ImportError(
-                "FastEmbedEmbedder needs fastembed; install it with: pip install 'embedstamp[fastembed]'"
-            ) from exc
+        except ImportError as exc:
+            raise missing_extra_error("FastEmbedEmbedder", "fastembed", "fastembed") from exc
         self.model = model
         self._model = TextEmbedding(model_name=model, **kwargs)  # type: ignore[arg-type]
 

@@ -8,6 +8,20 @@ if TYPE_CHECKING:  # pragma: no cover - import only for type checkers
     from .verify import Verdict
 
 
+def missing_extra_error(name: str, package: str, extra: str) -> ImportError:
+    """The ImportError for a feature whose optional dependency (extra) is not installed.
+
+    One message for every place that needs an extra (top-level lazy import, ChromaStore,
+    FastEmbedEmbedder), so the README troubleshooting table matches all of them.
+    """
+    # 설치 방법 두 가지(내 프로젝트·clone 한 레포)를 모두 알려 준다
+    return ImportError(
+        f"{name} needs the optional dependency {package!r}; install it with "
+        f"pip install \"embedstamp[{extra}]\" (in a clone: uv sync --extra {extra})",
+        name=package,
+    )
+
+
 class EmbedstampError(Exception):
     """Base class for every error embedstamp raises on purpose."""
 

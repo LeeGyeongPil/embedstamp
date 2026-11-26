@@ -13,7 +13,7 @@ from typing import Any
 
 import numpy as np
 
-from ..errors import FingerprintTooLargeError
+from ..errors import FingerprintTooLargeError, missing_extra_error
 from ..fingerprint import Fingerprint
 from . import Doc, blue_name
 
@@ -23,10 +23,8 @@ METADATA_KEY = "embedstamp"
 def _import_chromadb() -> Any:
     try:
         import chromadb
-    except ImportError as exc:  # pragma: no cover - depends on the environment
-        raise ImportError(
-            "ChromaStore needs chromadb; install it with: pip install 'embedstamp[chroma]'"
-        ) from exc
+    except ImportError as exc:
+        raise missing_extra_error("ChromaStore", "chromadb", "chroma") from exc
     return chromadb
 
 

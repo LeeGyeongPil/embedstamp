@@ -27,6 +27,7 @@ from .errors import (
     FingerprintTooLargeError,
     SwitchRefusedError,
 )
+from .errors import missing_extra_error as _missing_extra_error
 from .fingerprint import Fingerprint, stamp
 from .guard import Guard
 from .migrate import MigrationReport, migrate, overlap_at_k
@@ -39,7 +40,7 @@ if TYPE_CHECKING:  # pragma: no cover - type checkers see the lazy names as norm
     from .embedders.fastembed import FastEmbedEmbedder
     from .stores.chroma import ChromaStore
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 # 선택 의존성(extra)이 필요한 이름: 이름 -> (실제 모듈, 필요한 패키지, extra 이름).
 # import embedstamp 할 때는 불러오지 않고, 처음 꺼내 쓰는 순간 __getattr__ 이 불러온다.
@@ -58,11 +59,7 @@ def __getattr__(name: str) -> Any:
         importlib.import_module(package)  # extra 가 없으면 여기서 실패한다
     except ImportError as exc:
         # `from embedstamp import ChromaStore` 가 "cannot import name" 대신 고치는 방법을 보여 주게 한다
-        raise ImportError(
-            f"{name} needs the optional dependency {package!r}; install it with "
-            f"pip install \"embedstamp[{extra}]\" (in a clone: uv sync --extra {extra})",
-            name=package,
-        ) from exc
+        raise _missing_extra_error(name, package, extra) from exc
     value = getattr(importlib.import_module(module_name, __name__), name)
     globals()[name] = value  # 다음부터는 __getattr__ 을 거치지 않는다
     return value
